@@ -11,7 +11,7 @@
     "lint-js": "tslint --project tsconfig.json",
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "lint": "npm run prettier-check && npm run typecheck && npm run lint-js",
-    "tests": "./dist/cli.js assertions/pass.ts && ./dist/cli.js assertions/fail.ts",
+    "tests": "./dist/cli.js assertions/pass.ts && if ./dist/cli.js assertions/fail.ts; then echo 'Failing tests passed' && exit 1; else echo 'All tests successfully passed or failed'; fi",
     "test": "npm run lint && npm run dist && npm run tests",
     "prepublishOnly": "npm test"
   },
