@@ -56,7 +56,7 @@ const assert = (tree: Tree) => {
     : '*';
 
   if (tree.flags.verbose) {
-    logger.log(`Checking files matching:`);
+    logger.log(`Finding files matching:`);
     logger.log(indent(includes.join('\n'), '  '));
   }
 
@@ -70,6 +70,10 @@ const assert = (tree: Tree) => {
   if (tree.flags.verbose) {
     logger.log('Found files:');
     logger.log(indent(sourceFileNames.join('\n'), '  '));
+
+    if (globs.length) {
+      logger.log(`Only checking files matching ${globs.join(' ')}`);
+    }
   }
 
   const compilerOptions = ts.parseJsonConfigFileContent(
