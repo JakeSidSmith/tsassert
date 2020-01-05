@@ -10,6 +10,26 @@ You must be using a reasonably recent version of node. Guaranteed to work with n
 
 You must be using TypeScript `3.7` or above. This is a peer dependency.
 
+## The syntax
+
+Simply add a comment with the following structure to the end of any variable declaration:
+
+```ts
+// @type: ExpectedTypeHere
+```
+
+Example in tests:
+
+```ts
+describe('my getter', () => {
+  it('should return undefined if any values in the path are nullable', () => {
+    const result = get(obj, ['a', 'b', 'c']); // @type: string | undefined
+
+    expect(result).toBe(undefined);
+  });
+});
+```
+
 ## Install
 
 ```shell
@@ -48,23 +68,3 @@ The `project` option defaults to `./tsconfig.json`.
 If you don't specify a file or pattern tsassert will use the `includes` from your `tsconfig.json`.
 
 Run `tsassert --help` for a full list of options.
-
-## The syntax
-
-Simply add a comment with the following structure to the end of any variable declaration:
-
-```ts
-// @type: ExpectedTypeHere
-```
-
-Example in tests:
-
-```ts
-describe('my getter', () => {
-  it('should return undefined if any values in the path are nullable', () => {
-    const result = get(obj, ['a', 'b', 'c']); // @type: string | undefined
-
-    expect(result).toBe(undefined);
-  });
-});
-```
