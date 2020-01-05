@@ -1,8 +1,10 @@
 {
-  "name": "tsassert",
+  "name": "@jakesidsmith/tsassert",
   "version": "0.0.0",
   "description": "Check TypeScript types against assertion comments",
-  "bin": "dist/cli.js",
+  "bin": {
+    "tsassert": "dist/cli.js"
+  },
   "main": "dist/index.js",
   "scripts": {
     "dist": "rm -rf dist && tsc --project tsconfig.dist.json && chmod +x dist/cli.js",
