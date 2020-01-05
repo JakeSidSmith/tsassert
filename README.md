@@ -13,7 +13,7 @@ You must be using TypeScript `3.7` or above. This is a peer dependency.
 ## Install
 
 ```shell
-npm i tsassert -D
+npm i @jakesidsmith/tsassert -D
 ```
 
 `-D` (`--save-dev`) will automatically add this to your `package.json` and `package-lock.json`.
