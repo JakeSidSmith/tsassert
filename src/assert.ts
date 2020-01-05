@@ -89,7 +89,7 @@ const assert = (tree: Tree) => {
   const errors: string[] = [];
 
   const checkTypes = (file: ts.SourceFile) => {
-    if (!globs.length || globule.isMatch(file.fileName, globs)) {
+    if (!globs.length || globule.isMatch(globs, file.fileName)) {
       const lines = file.getFullText().split('\n');
 
       const traverse = (node: ts.Node) => {
