@@ -6,7 +6,7 @@
 
 ## Requirements
 
-You must be using a reasonable recent version of node. Guaranteed to work with node 12. May work with older versions.
+You must be using a reasonably recent version of node. Guaranteed to work with node 12. May work with older versions.
 
 You must be using TypeScript `3.7` or above. This is a peer dependency.
 
