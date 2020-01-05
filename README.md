@@ -4,6 +4,12 @@
 
 [![CircleCI](https://circleci.com/gh/JakeSidSmith/tsassert.svg?style=svg)](https://circleci.com/gh/JakeSidSmith/tsassert)
 
+## About
+
+This library provides an easy way for library publishers (and anyone else that wants) to assert the output types of their APIs, and ensure that these do not regress over time.
+
+I would recommend adding a tsassert command to your tests and or continuous integration pipeline.
+
 ## Requirements
 
 You must be using a reasonably recent version of node. Guaranteed to work with node 12. May work with older versions.
