@@ -43,7 +43,7 @@
     "chalk": "^3.0.0",
     "globule": "^1.3.0",
     "jargs": "^0.4.1",
-    "typescript": "^3.7.4"
+    "typescript": "3.x.x"
   },
   "devDependencies": {
     "@types/globule": "^1.1.3",
@@ -53,6 +53,6 @@
     "tslint-eslint-rules": "^5.4.0"
   },
   "peerDependencies": {
-    "typescript": ">=3.7"
+    "typescript": "3.x.x"
   }
 }
