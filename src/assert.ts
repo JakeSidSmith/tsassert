@@ -69,7 +69,7 @@ const assert = (tree: Tree) => {
   const sourceFileNames = globule.find([...globs, ...includes, ...excludes]);
 
   if (!sourceFileNames.length) {
-    logger.error(`Could not find any source files matching:`);
+    logger.error('Could not find any source files matching:');
     logger.error(indent(includes.join('\n'), '  '));
     logger.error('Excluding:');
     return logger.error(indent(excludes.join('\n'), '  '), true);
@@ -80,7 +80,8 @@ const assert = (tree: Tree) => {
     logger.log(indent(sourceFileNames.join('\n'), '  '));
 
     if (globs.length) {
-      logger.log(`Only checking files matching ${globs.join(' ')}`);
+      logger.log('Only checking files matching:');
+      logger.log(indent(globs.join('\n'), '  '));
     }
   }
 
