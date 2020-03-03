@@ -55,16 +55,24 @@ const assert = (tree: Tree) => {
     ? globs
     : '*';
 
+  const excludes = json.config?.exclude?.length
+    ? json.config?.exclude?.map((include: string) => `!${include}`)
+    : [];
+
   if (tree.flags.verbose) {
-    logger.log(`Finding files matching:`);
+    logger.log('Finding files matching:');
     logger.log(indent(includes.join('\n'), '  '));
+    logger.log('Excluding:');
+    logger.log(indent(excludes.join('\n'), '  '));
   }
 
-  const sourceFileNames = globule.find(includes);
+  const sourceFileNames = globule.find([...globs, ...includes, ...excludes]);
 
   if (!sourceFileNames.length) {
     logger.error(`Could not find any source files matching:`);
-    return logger.error(indent(includes.join('\n'), '  '), true);
+    logger.error(indent(includes.join('\n'), '  '));
+    logger.error('Excluding:');
+    return logger.error(indent(excludes.join('\n'), '  '), true);
   }
 
   if (tree.flags.verbose) {
@@ -89,7 +97,10 @@ const assert = (tree: Tree) => {
   const errors: string[] = [];
 
   const checkTypes = (file: ts.SourceFile) => {
-    if (!globs.length || globule.isMatch(globs, file.fileName)) {
+    if (
+      (!globs.length || globule.isMatch(globs, file.fileName)) &&
+      (!excludes.length || globule.isMatch(excludes, file.fileName))
+    ) {
       const lines = file.getFullText().split('\n');
 
       const traverse = (node: ts.Node) => {
