@@ -48,15 +48,15 @@ const assert = (tree: Tree) => {
     : '**/*.{ts,tsx}';
 
   const includes = json.config?.include?.length
-    ? json.config?.include?.map((include: string) =>
-        MATCHES_GLOB.test(include) ? include : path.join(include, extensions)
+    ? json.config?.include?.map((pattern: string) =>
+        MATCHES_GLOB.test(pattern) ? pattern : path.join(pattern, extensions)
       )
     : globs?.length
     ? globs
     : '*';
 
   const excludes = json.config?.exclude?.length
-    ? json.config?.exclude?.map((include: string) => `!${include}`)
+    ? json.config?.exclude?.map((pattern: string) => `!${pattern}`)
     : [];
 
   if (tree.flags.verbose) {
