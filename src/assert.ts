@@ -15,7 +15,7 @@ const assert = (tree: Tree) => {
     return version();
   }
 
-  logger.log('Checking type assertion comments', 'green');
+  logger.success('Checking type assertion comments');
 
   const cwd = process.cwd();
 
@@ -48,31 +48,40 @@ const assert = (tree: Tree) => {
     : '**/*.{ts,tsx}';
 
   const includes = json.config?.include?.length
-    ? json.config?.include?.map((include: string) =>
-        MATCHES_GLOB.test(include) ? include : path.join(include, extensions)
+    ? json.config?.include?.map((pattern: string) =>
+        MATCHES_GLOB.test(pattern) ? pattern : path.join(pattern, extensions)
       )
     : globs?.length
     ? globs
     : '*';
 
+  const excludes = json.config?.exclude?.length
+    ? json.config?.exclude?.map((pattern: string) => `!${pattern}`)
+    : [];
+
   if (tree.flags.verbose) {
-    logger.log(`Finding files matching:`);
+    logger.info('Finding files matching:');
     logger.log(indent(includes.join('\n'), '  '));
+    logger.info('Excluding:');
+    logger.log(indent(excludes.join('\n'), '  '));
   }
 
-  const sourceFileNames = globule.find(includes);
+  const sourceFileNames = globule.find([...globs, ...includes, ...excludes]);
 
   if (!sourceFileNames.length) {
-    logger.error(`Could not find any source files matching:`);
-    return logger.error(indent(includes.join('\n'), '  '), true);
+    logger.error('Could not find any source files matching:');
+    logger.error(indent(includes.join('\n'), '  '));
+    logger.error('Excluding:');
+    return logger.error(indent(excludes.join('\n'), '  '), true);
   }
 
   if (tree.flags.verbose) {
-    logger.log('Found files:');
+    logger.info('Found files:');
     logger.log(indent(sourceFileNames.join('\n'), '  '));
 
     if (globs.length) {
-      logger.log(`Only checking files matching ${globs.join(' ')}`);
+      logger.info('Only checking files matching:');
+      logger.log(indent(globs.join('\n'), '  '));
     }
   }
 
@@ -86,10 +95,21 @@ const assert = (tree: Tree) => {
   const sourceFiles = program.getSourceFiles();
   const checker = program.getTypeChecker();
 
+  let filesChecked = 0;
+  let commentsChecked = 0;
   const errors: string[] = [];
 
   const checkTypes = (file: ts.SourceFile) => {
-    if (!globs.length || globule.isMatch(globs, file.fileName)) {
+    if (
+      (!globs.length || globule.isMatch(globs, file.fileName)) &&
+      (!excludes.length || globule.isMatch(excludes, file.fileName))
+    ) {
+      filesChecked += 1;
+
+      if (tree.flags.verbose) {
+        logger.log(indent(file.fileName, '  '));
+      }
+
       const lines = file.getFullText().split('\n');
 
       const traverse = (node: ts.Node) => {
@@ -101,6 +121,7 @@ const assert = (tree: Tree) => {
         const result = MATCHES_TRAILING_COMMENT.exec(line);
 
         if (result && ts.isVariableDeclaration(node)) {
+          commentsChecked += 1;
           const comment = result[1];
           const lineNumber = lineIndex + 1;
           const symbol = checker.getSymbolAtLocation(node.name);
@@ -126,6 +147,10 @@ const assert = (tree: Tree) => {
     return errors;
   };
 
+  if (tree.flags.verbose) {
+    logger.info('Checking files:');
+  }
+
   sourceFiles.forEach(checkTypes);
 
   if (errors.length) {
@@ -133,9 +158,19 @@ const assert = (tree: Tree) => {
       logger.error(error);
     });
 
-    return logger.error('Some files failed tsassert checks', true);
+    return logger.error('Some files failed tsassert checks.', true);
   } else {
-    logger.log('All files passed tsassert checks', 'green');
+    if (!filesChecked) {
+      logger.warn(
+        'Could not find any matching files to check.\nRun with --verbose to see patterns that were checked.'
+      );
+    } else if (!commentsChecked) {
+      logger.warn(
+        'Could not find any type assertions in matched files.\nRun with --verbose to see patterns that were checked.'
+      );
+    } else {
+      logger.success('All files passed tsassert checks.');
+    }
   }
 };
 

@@ -71,6 +71,10 @@ tsassert --verbose
 
 The `project` option defaults to `./tsconfig.json`.
 
-If you don't specify a file or pattern tsassert will use the `includes` from your `tsconfig.json`.
+If you don't specify a file or pattern tsassert will use the `include` and `exclude` from your `tsconfig.json`.
+
+If your `tsconfig.json` has an `exclude` option, these files will not be checked even if your manually provided glob matches them.
+
+If you want to include a file that is excluded by your `tsconfig.json` you should extend the config, override the `exclude` property and provide this `tsconfig.json` as the `--project` argument e.g. `tsassert --project tsconfig.tsassert.json`.
 
 Run `tsassert --help` for a full list of options.
