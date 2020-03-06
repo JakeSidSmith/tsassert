@@ -11,10 +11,23 @@ interface ABC {
   d: ['a', 'b', 'c'];
 }
 
-export const abc = {} as ABC | null; // @type: ABC | null
+export const abc = {} as ABC | null; // @type: ABC
 
 export const result = removeNull(abc); // @type: ABC | null
+
+removeNull(abc); // @type: ABC | null
 
 export const c = abc?.a?.b.c; // @type string | number
 
 export const d = abc?.d; // @type ['a', 'b', 'c'] | undefined
+
+class MyClass<T> {
+  public input: T;
+
+  public constructor(input: T) {
+    this.input = input;
+  }
+}
+
+// tslint:disable-next-line:no-unused-expression
+new MyClass(abc); // @type: MyClass<ABC>
