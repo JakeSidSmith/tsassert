@@ -137,7 +137,7 @@ const assert = (tree: Tree) => {
 
           const comment = result[1];
           const lineNumber = lineIndex + 1;
-          const fileLine = `${file.fileName}:${lineNumber}: `;
+          const fileLine = `${relativeFileName}:${lineNumber}: `;
 
           if (ts.isVariableDeclaration(node)) {
             const symbol = checker.getSymbolAtLocation(node.name);
