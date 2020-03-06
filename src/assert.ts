@@ -120,21 +120,46 @@ const assert = (tree: Tree) => {
 
         const result = MATCHES_TRAILING_COMMENT.exec(line);
 
-        if (result && ts.isVariableDeclaration(node)) {
+        if (result) {
           commentsChecked += 1;
+
           const comment = result[1];
           const lineNumber = lineIndex + 1;
-          const symbol = checker.getSymbolAtLocation(node.name);
+          const fileLine = `${file.fileName}:${lineNumber}: `;
 
-          if (symbol) {
-            const typeNode = checker.getTypeOfSymbolAtLocation(symbol, node);
-            const type = checker.typeToString(typeNode);
+          if (ts.isVariableDeclaration(node)) {
+            const symbol = checker.getSymbolAtLocation(node.name);
+            const variableName = node.name.getText();
 
-            if (type !== comment) {
-              errors.push(
-                `${file.fileName}:${lineNumber}: Type ${type} did not match type comment ${comment}`
-              );
+            if (symbol) {
+              const typeNode = checker.getTypeOfSymbolAtLocation(symbol, node);
+              const type = checker.typeToString(typeNode);
+
+              if (type !== comment) {
+                errors.push(
+                  `${fileLine}Type of "${variableName}" - ${type} did not match type comment ${comment}`
+                );
+              }
             }
+
+            return;
+          } else if (ts.isCallExpression(node)) {
+            const signature = checker.getResolvedSignature(node);
+            const functionName = node.expression.getText();
+
+            if (signature) {
+              const type = checker.typeToString(
+                checker.getReturnTypeOfSignature(signature)
+              );
+
+              if (type !== comment) {
+                errors.push(
+                  `${fileLine}Return type of "${functionName}" - ${type} did not match type comment ${comment}`
+                );
+              }
+            }
+
+            return;
           }
         }
 
