@@ -15,6 +15,8 @@ export const abc = {} as ABC | null; // @type: ABC | null
 
 export const result = removeNull(abc); // @type: ABC
 
+removeNull(abc); // @type: ABC
+
 export const c = abc?.a?.b.c; // @type string | number | undefined
 
 export const d = abc?.d; // @type ["a", "b", "c"] | undefined
