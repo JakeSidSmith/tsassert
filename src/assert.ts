@@ -9,6 +9,7 @@ import { version } from './version';
 
 const MATCHES_GLOB = /(?:}|\)|\*+\/?|\.[t]sx?)$/;
 const MATCHES_TRAILING_COMMENT = /\/\/\s?@type(?::|\s)\s*(.+)\s*?$/;
+const MATCHES_NODE_MODULES = /^node_modules/;
 
 const assert = (tree: Tree) => {
   if (tree.flags.version) {
@@ -112,6 +113,7 @@ const assert = (tree: Tree) => {
     const relativeFileName = path.relative(process.cwd(), file.fileName);
 
     if (
+      !MATCHES_NODE_MODULES.test(relativeFileName) &&
       (!globs.length || globule.isMatch(globs, relativeFileName)) &&
       (!excludes.length || !globule.isMatch(excludes, relativeFileName))
     ) {
