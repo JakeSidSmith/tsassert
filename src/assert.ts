@@ -130,15 +130,29 @@ const assert = (tree: Tree) => {
           node.getStart()
         );
         const line = lines[lineIndex];
+        let result = MATCHES_TRAILING_COMMENT.exec(line);
 
-        const result = MATCHES_TRAILING_COMMENT.exec(line);
+        const lineNumber = lineIndex + 1;
+        const fileLine = `${relativeFileName}:${lineNumber}: `;
+
+        if (lineIndex > 0) {
+          const previousLine = lines[lineIndex - 1];
+          const lonelyResult = MATCHES_LONELY_COMMENT.exec(previousLine);
+
+          if (lonelyResult) {
+            if (result) {
+              errors.push(`${fileLine}Found 2 type comments for the same line`);
+              return;
+            } else {
+              result = lonelyResult;
+            }
+          }
+        }
 
         if (result) {
           commentsChecked += 1;
 
           const comment = result[1];
-          const lineNumber = lineIndex + 1;
-          const fileLine = `${relativeFileName}:${lineNumber}: `;
 
           if (ts.isVariableDeclaration(node)) {
             const symbol = checker.getSymbolAtLocation(node.name);
