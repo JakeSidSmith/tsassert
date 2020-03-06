@@ -11,7 +11,7 @@ interface ABC {
   d: ['a', 'b', 'c'];
 }
 
-export const abc = {} as ABC | null; // @type: ABC | null
+export const abc = {} as ABC | null; // @type: ABC
 
 export const result = removeNull(abc); // @type: ABC | null
 
