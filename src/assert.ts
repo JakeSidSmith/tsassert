@@ -96,6 +96,7 @@ const assert = (tree: Tree) => {
   const checker = program.getTypeChecker();
 
   let filesChecked = 0;
+  let commentsChecked = 0;
   const errors: string[] = [];
 
   const checkTypes = (file: ts.SourceFile) => {
@@ -104,6 +105,11 @@ const assert = (tree: Tree) => {
       (!excludes.length || globule.isMatch(excludes, file.fileName))
     ) {
       filesChecked += 1;
+
+      if (tree.flags.verbose) {
+        logger.log(indent(file.fileName, '  '));
+      }
+
       const lines = file.getFullText().split('\n');
 
       const traverse = (node: ts.Node) => {
@@ -115,6 +121,7 @@ const assert = (tree: Tree) => {
         const result = MATCHES_TRAILING_COMMENT.exec(line);
 
         if (result && ts.isVariableDeclaration(node)) {
+          commentsChecked += 1;
           const comment = result[1];
           const lineNumber = lineIndex + 1;
           const symbol = checker.getSymbolAtLocation(node.name);
@@ -140,6 +147,10 @@ const assert = (tree: Tree) => {
     return errors;
   };
 
+  if (tree.flags.verbose) {
+    logger.info('Checking files:');
+  }
+
   sourceFiles.forEach(checkTypes);
 
   if (errors.length) {
@@ -152,6 +163,10 @@ const assert = (tree: Tree) => {
     if (!filesChecked) {
       logger.warn(
         'Could not find any matching files to check.\nRun with --verbose to see patterns that were checked.'
+      );
+    } else if (!commentsChecked) {
+      logger.warn(
+        'Could not find any type assertions in matched files.\nRun with --verbose to see patterns that were checked.'
       );
     } else {
       logger.success('All files passed tsassert checks.');
