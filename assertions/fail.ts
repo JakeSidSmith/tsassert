@@ -30,7 +30,7 @@ class MyClass<T> {
 }
 
 // tslint:disable-next-line:no-unused-expression
-new MyClass(abc); // @type: MyClass<ABC>
+new MyClass(abc); // @type: MyClass<CBA | null>
 
 // @type: ABC
 removeNull(abc); // @type: ABC
