@@ -15,7 +15,7 @@ const assert = (tree: Tree) => {
     return version();
   }
 
-  logger.log('Checking type assertion comments', 'green');
+  logger.success('Checking type assertion comments');
 
   const cwd = process.cwd();
 
@@ -60,9 +60,9 @@ const assert = (tree: Tree) => {
     : [];
 
   if (tree.flags.verbose) {
-    logger.log('Finding files matching:');
+    logger.info('Finding files matching:');
     logger.log(indent(includes.join('\n'), '  '));
-    logger.log('Excluding:');
+    logger.info('Excluding:');
     logger.log(indent(excludes.join('\n'), '  '));
   }
 
@@ -76,11 +76,11 @@ const assert = (tree: Tree) => {
   }
 
   if (tree.flags.verbose) {
-    logger.log('Found files:');
+    logger.info('Found files:');
     logger.log(indent(sourceFileNames.join('\n'), '  '));
 
     if (globs.length) {
-      logger.log('Only checking files matching:');
+      logger.info('Only checking files matching:');
       logger.log(indent(globs.join('\n'), '  '));
     }
   }
@@ -95,6 +95,7 @@ const assert = (tree: Tree) => {
   const sourceFiles = program.getSourceFiles();
   const checker = program.getTypeChecker();
 
+  let filesChecked = 0;
   const errors: string[] = [];
 
   const checkTypes = (file: ts.SourceFile) => {
@@ -102,6 +103,7 @@ const assert = (tree: Tree) => {
       (!globs.length || globule.isMatch(globs, file.fileName)) &&
       (!excludes.length || globule.isMatch(excludes, file.fileName))
     ) {
+      filesChecked += 1;
       const lines = file.getFullText().split('\n');
 
       const traverse = (node: ts.Node) => {
@@ -145,9 +147,15 @@ const assert = (tree: Tree) => {
       logger.error(error);
     });
 
-    return logger.error('Some files failed tsassert checks', true);
+    return logger.error('Some files failed tsassert checks.', true);
   } else {
-    logger.log('All files passed tsassert checks', 'green');
+    if (!filesChecked) {
+      logger.warn(
+        'Could not find any matching files to check.\nRun with --verbose to see patterns that were checked.'
+      );
+    } else {
+      logger.success('All files passed tsassert checks.');
+    }
   }
 };
 
