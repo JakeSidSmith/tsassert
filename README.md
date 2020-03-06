@@ -14,7 +14,7 @@ I would recommend adding a tsassert command to your tests and or continuous inte
 
 You must be using a reasonably recent version of node. Guaranteed to work with node 12. May work with older versions.
 
-You must be using TypeScript `3.7` or above. This is a peer dependency.
+You must be using TypeScript 3 (this is a peer dependency).
 
 ## The syntax
 
