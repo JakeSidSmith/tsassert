@@ -1,6 +1,6 @@
 {
   "name": "@jakesidsmith/tsassert",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Check TypeScript types against assertion comments",
   "publishConfig": {
     "access": "public"
