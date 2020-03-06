@@ -31,3 +31,6 @@ class MyClass<T> {
 
 // tslint:disable-next-line:no-unused-expression
 new MyClass(abc); // @type: MyClass<ABC>
+
+// @type: ABC
+removeNull(abc); // @type: ABC

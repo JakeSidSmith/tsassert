@@ -18,7 +18,7 @@ You must be using TypeScript `3.7` or above. This is a peer dependency.
 
 ## The syntax
 
-Simply add a comment with the following structure to the end of any variable declaration:
+Simply add a comment with the following structure to the end of the line, or on the line above:
 
 ```ts
 // @type: ExpectedTypeHere
@@ -30,11 +30,20 @@ Basic examples:
 // Assert variable types
 const myNumber = 1; // @type: number
 
+// @type: number
+const myOtherNumber = 2;
+
 // Assert return type of function
 sendMessage('Hello'); // @type: Promise<string>
 
+// @type: Promise<string>
+sendMessage('Hello again');
+
 // Assert type of class instance
 new MyClass(abc); // @type: MyClass<ABC>
+
+// @type: MyClass<ABC>
+new MyClass(abc);
 ```
 
 Example in tests:
@@ -42,7 +51,8 @@ Example in tests:
 ```ts
 describe('my getter', () => {
   it('should return undefined if any values in the path are nullable', () => {
-    const result = get(obj, ['a', 'b', 'c']); // @type: string | undefined
+    // @type: string | undefined
+    const result = get(obj, ['a', 'b', 'c']);
 
     expect(result).toBe(undefined);
   });
