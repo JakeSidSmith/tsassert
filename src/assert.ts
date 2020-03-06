@@ -9,6 +9,7 @@ import { version } from './version';
 
 const MATCHES_GLOB = /(?:}|\)|\*+\/?|\.[t]sx?)$/;
 const MATCHES_TRAILING_COMMENT = /\/\/\s?@type(?::|\s)\s*(.+)\s*?$/;
+const MATCHES_NODE_MODULES = /^node_modules/;
 
 const assert = (tree: Tree) => {
   if (tree.flags.version) {
@@ -32,10 +33,12 @@ const assert = (tree: Tree) => {
   if (tree.args.glob?.length) {
     if (Array.isArray(tree.args.glob)) {
       globs = globs.concat(tree.args.glob.filter(isTruthyString));
-    } else {
+    } else if (tree.args.glob) {
       globs = [tree.args.glob];
     }
   }
+
+  globs = globs.map(glob => path.relative(process.cwd(), glob));
 
   const json = ts.readConfigFile(project, ts.sys.readFile);
 
@@ -49,14 +52,17 @@ const assert = (tree: Tree) => {
 
   const includes = json.config?.include?.length
     ? json.config?.include?.map((pattern: string) =>
-        MATCHES_GLOB.test(pattern) ? pattern : path.join(pattern, extensions)
+        path.relative(
+          process.cwd(),
+          MATCHES_GLOB.test(pattern) ? pattern : path.join(pattern, extensions)
+        )
       )
-    : globs?.length
-    ? globs
-    : '*';
+    : [];
 
   const excludes = json.config?.exclude?.length
-    ? json.config?.exclude?.map((pattern: string) => `!${pattern}`)
+    ? json.config?.exclude?.map(
+        (pattern: string) => `!${path.relative(process.cwd(), pattern)}`
+      )
     : [];
 
   if (tree.flags.verbose) {
@@ -66,7 +72,11 @@ const assert = (tree: Tree) => {
     logger.log(indent(excludes.join('\n'), '  '));
   }
 
-  const sourceFileNames = globule.find([...globs, ...includes, ...excludes]);
+  const patternsToFind = [...globs, ...includes, ...excludes];
+
+  const sourceFileNames = globule.find(
+    patternsToFind.length ? patternsToFind : '*'
+  );
 
   if (!sourceFileNames.length) {
     logger.error('Could not find any source files matching:');
@@ -100,14 +110,16 @@ const assert = (tree: Tree) => {
   const errors: string[] = [];
 
   const checkTypes = (file: ts.SourceFile) => {
+    const relativeFileName = path.relative(process.cwd(), file.fileName);
+
     if (
-      (!globs.length || globule.isMatch(globs, file.fileName)) &&
-      (!excludes.length || globule.isMatch(excludes, file.fileName))
+      !MATCHES_NODE_MODULES.test(relativeFileName) &&
+      (!globs.length || globule.isMatch(globs, relativeFileName))
     ) {
       filesChecked += 1;
 
       if (tree.flags.verbose) {
-        logger.log(indent(file.fileName, '  '));
+        logger.log(indent(relativeFileName, '  '));
       }
 
       const lines = file.getFullText().split('\n');
@@ -132,7 +144,7 @@ const assert = (tree: Tree) => {
 
             if (type !== comment) {
               errors.push(
-                `${file.fileName}:${lineNumber}: Type ${type} did not match type comment ${comment}`
+                `${relativeFileName}:${lineNumber}: Type ${type} did not match type comment ${comment}`
               );
             }
           }
