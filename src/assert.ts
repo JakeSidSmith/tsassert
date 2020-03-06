@@ -236,11 +236,11 @@ const assert = (tree: Tree) => {
           .diffWordsWithSpace(error.expected, error.received)
           .map(part => {
             if (part.added) {
-              return chalk.greenBright(part.value);
+              return chalk.bgGreenBright(chalk.black(part.value));
             }
 
             if (part.removed) {
-              return chalk.redBright(part.value);
+              return chalk.bgRedBright(chalk.black(part.value));
             }
 
             return part.value;
