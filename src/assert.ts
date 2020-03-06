@@ -143,7 +143,7 @@ const assert = (tree: Tree) => {
             }
 
             return;
-          } else if (ts.isCallExpression(node)) {
+          } else if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
             const signature = checker.getResolvedSignature(node);
             const functionName = node.expression.getText();
 
