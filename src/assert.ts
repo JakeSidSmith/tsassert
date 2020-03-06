@@ -114,8 +114,7 @@ const assert = (tree: Tree) => {
 
     if (
       !MATCHES_NODE_MODULES.test(relativeFileName) &&
-      (!globs.length || globule.isMatch(globs, relativeFileName)) &&
-      (!excludes.length || !globule.isMatch(excludes, relativeFileName))
+      (!globs.length || globule.isMatch(globs, relativeFileName))
     ) {
       filesChecked += 1;
 
