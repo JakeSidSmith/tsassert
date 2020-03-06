@@ -24,6 +24,19 @@ Simply add a comment with the following structure to the end of any variable dec
 // @type: ExpectedTypeHere
 ```
 
+Basic examples:
+
+```ts
+// Assert variable types
+const myNumber = 1; // @type: number
+
+// Assert return type of function
+sendMessage('Hello'); // @type: Promise<string>
+
+// Assert type of class instance
+new MyClass(abc); // @type: MyClass<ABC>
+```
+
 Example in tests:
 
 ```ts
