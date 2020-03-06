@@ -1,3 +1,5 @@
+import * as chalk from 'chalk';
+import * as diff from 'diff';
 import * as globule from 'globule';
 import { Tree } from 'jargs';
 import * as path from 'path';
@@ -12,12 +14,18 @@ const MATCHES_LONELY_COMMENT = /^\s*?\/\/\s?@type(?::|\s)\s*(.+?)\s*?$/;
 const MATCHES_TRAILING_COMMENT = /\/\/\s?@type(?::|\s)\s*(.+?)\s*?$/;
 const MATCHES_NODE_MODULES = /^node_modules/;
 
+interface AssertionError {
+  message: string;
+  expected: string;
+  received: string;
+}
+
 const assert = (tree: Tree) => {
   if (tree.flags.version) {
     return version();
   }
 
-  logger.success('Checking type assertion comments');
+  logger.log('\nChecking type assertion comments...\n');
 
   const cwd = process.cwd();
 
@@ -68,9 +76,9 @@ const assert = (tree: Tree) => {
 
   if (tree.flags.verbose) {
     logger.info('Finding files matching:');
-    logger.log(indent(includes.join('\n'), '  '));
+    logger.log(indent(includes.join('\n'), '  ').concat('\n'));
     logger.info('Excluding:');
-    logger.log(indent(excludes.join('\n'), '  '));
+    logger.log(indent(excludes.join('\n'), '  ').concat('\n'));
   }
 
   const patternsToFind = [...globs, ...includes, ...excludes];
@@ -81,18 +89,18 @@ const assert = (tree: Tree) => {
 
   if (!sourceFileNames.length) {
     logger.error('Could not find any source files matching:');
-    logger.error(indent(includes.join('\n'), '  '));
+    logger.error(indent(includes.join('\n'), '  ').concat('\n'));
     logger.error('Excluding:');
-    return logger.error(indent(excludes.join('\n'), '  '), true);
+    return logger.error(indent(excludes.join('\n'), '  ').concat('\n'), true);
   }
 
   if (tree.flags.verbose) {
     logger.info('Found files:');
-    logger.log(indent(sourceFileNames.join('\n'), '  '));
+    logger.log(indent(sourceFileNames.join('\n'), '  ').concat('\n'));
 
     if (globs.length) {
       logger.info('Only checking files matching:');
-      logger.log(indent(globs.join('\n'), '  '));
+      logger.log(indent(globs.join('\n'), '  ').concat('\n'));
     }
   }
 
@@ -108,7 +116,7 @@ const assert = (tree: Tree) => {
 
   let filesChecked = 0;
   let commentsChecked = 0;
-  const errors: string[] = [];
+  const errors: Array<AssertionError | string> = [];
 
   const checkTypes = (file: ts.SourceFile) => {
     const relativeFileName = path.relative(process.cwd(), file.fileName);
@@ -163,9 +171,13 @@ const assert = (tree: Tree) => {
               const type = checker.typeToString(typeNode);
 
               if (type !== comment) {
-                errors.push(
-                  `${fileLine}Type of "${variableName}" - ${type} did not match type comment ${comment}`
-                );
+                const message = `${fileLine}Type of "${variableName}" did not match type comment:`;
+
+                errors.push({
+                  message,
+                  expected: comment,
+                  received: type,
+                });
               }
             }
 
@@ -180,9 +192,13 @@ const assert = (tree: Tree) => {
               );
 
               if (type !== comment) {
-                errors.push(
-                  `${fileLine}Return type of "${functionName}" - ${type} did not match type comment ${comment}`
-                );
+                const message = `${fileLine}Return type of "${functionName}" did not match type comment:`;
+
+                errors.push({
+                  message,
+                  expected: comment,
+                  received: type,
+                });
               }
             }
 
@@ -205,23 +221,48 @@ const assert = (tree: Tree) => {
 
   sourceFiles.forEach(checkTypes);
 
+  logger.log('');
+
   if (errors.length) {
     errors.forEach(error => {
-      logger.error(error);
+      if (typeof error === 'string') {
+        logger.error(error);
+      } else {
+        logger.error(error.message);
+        logger.log(indent(`Expected: ${error.expected}`, '  '));
+        logger.log(indent(`Received: ${error.received}`, '  '));
+
+        const diffString = diff
+          .diffWordsWithSpace(error.expected, error.received)
+          .map(part => {
+            if (part.added) {
+              return chalk.greenBright(part.value);
+            }
+
+            if (part.removed) {
+              return chalk.redBright(part.value);
+            }
+
+            return part.value;
+          })
+          .join('');
+
+        logger.log(indent(`Variance: ${diffString}\n`, '  '));
+      }
     });
 
-    return logger.error('Some files failed tsassert checks.', true);
+    return logger.error('\nSome files failed tsassert checks.\n', true);
   } else {
     if (!filesChecked) {
       logger.warn(
-        'Could not find any matching files to check.\nRun with --verbose to see patterns that were checked.'
+        '\nCould not find any matching files to check.\nRun with --verbose to see patterns that were checked.\n'
       );
     } else if (!commentsChecked) {
       logger.warn(
-        'Could not find any type assertions in matched files.\nRun with --verbose to see patterns that were checked.'
+        '\nCould not find any type assertions in matched files.\nRun with --verbose to see patterns that were checked.\n'
       );
     } else {
-      logger.success('All files passed tsassert checks.');
+      logger.success('\nAll files passed tsassert checks.\n');
     }
   }
 };
