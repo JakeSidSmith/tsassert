@@ -77,4 +77,6 @@ If your `tsconfig.json` has an `exclude` option, these files will not be checked
 
 If you want to include a file that is excluded by your `tsconfig.json` you should extend the config, override the `exclude` property and provide this `tsconfig.json` as the `--project` argument e.g. `tsassert --project tsconfig.tsassert.json`.
 
+Regardless of your includes or excludes `node_modules` will always be excluded.
+
 Run `tsassert --help` for a full list of options.
