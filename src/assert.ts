@@ -9,6 +9,7 @@ import * as logger from './logger';
 import { indent, isTruthyString } from './utils';
 import { version } from './version';
 
+const COMMENT_PREFIX = '@tsassert';
 const MATCHES_GLOB = /(?:}|\)|\*+\/?|\.[t]sx?)$/;
 const MATCHES_LONELY_COMMENT = /^\s*?\/\/\s?@tsassert(?::|\s)\s*(.+?)\s*?$/;
 const MATCHES_TRAILING_COMMENT = /\/\/\s?@tsassert(?::|\s)\s*(.+?)\s*?$/;
@@ -25,7 +26,7 @@ const assert = (tree: Tree) => {
     return version();
   }
 
-  logger.log('\nChecking type assertion comments...\n');
+  logger.log(`\nChecking ${COMMENT_PREFIX} comments...\n`);
 
   const cwd = process.cwd();
 
@@ -149,7 +150,9 @@ const assert = (tree: Tree) => {
 
           if (lonelyResult) {
             if (result) {
-              errors.push(`${fileLine}Found 2 type comments for the same line`);
+              errors.push(
+                `${fileLine}Found 2 ${COMMENT_PREFIX} comments for the same line`
+              );
               return;
             } else {
               result = lonelyResult;
@@ -171,7 +174,7 @@ const assert = (tree: Tree) => {
               const type = checker.typeToString(typeNode);
 
               if (type !== comment) {
-                const message = `${fileLine}Type of "${variableName}" did not match type comment:`;
+                const message = `${fileLine}Type of "${variableName}" did not match ${COMMENT_PREFIX} comment:`;
 
                 errors.push({
                   message,
@@ -192,7 +195,7 @@ const assert = (tree: Tree) => {
               );
 
               if (type !== comment) {
-                const message = `${fileLine}Return type of "${functionName}" did not match type comment:`;
+                const message = `${fileLine}Return type of "${functionName}" did not match ${COMMENT_PREFIX} comment:`;
 
                 errors.push({
                   message,
@@ -251,7 +254,10 @@ const assert = (tree: Tree) => {
       }
     });
 
-    return logger.error('\nSome files failed tsassert checks.\n', true);
+    return logger.error(
+      `\nSome files failed ${COMMENT_PREFIX} checks.\n`,
+      true
+    );
   } else {
     if (!filesChecked) {
       logger.warn(
@@ -259,10 +265,10 @@ const assert = (tree: Tree) => {
       );
     } else if (!commentsChecked) {
       logger.warn(
-        '\nCould not find any type assertions in matched files.\nRun with --verbose to see patterns that were checked.\n'
+        `\nCould not find any ${COMMENT_PREFIX} comments in matched files.\nRun with --verbose to see patterns that were checked.\n`
       );
     } else {
-      logger.success('\nAll files passed tsassert checks.\n');
+      logger.success(`\nAll files passed ${COMMENT_PREFIX} checks.\n`);
     }
   }
 };
