@@ -21,28 +21,28 @@ You must be using TypeScript 3 (this is a peer dependency).
 Simply add a comment with the following structure to the end of the line, or on the line above:
 
 ```ts
-// @type: ExpectedTypeHere
+// @tsassert: ExpectedTypeHere
 ```
 
 Basic examples:
 
 ```ts
 // Assert variable types
-const myNumber = 1; // @type: number
+const myNumber = 1; // @tsassert: number
 
-// @type: number
+// @tsassert: number
 const myOtherNumber = 2;
 
 // Assert return type of function
-sendMessage('Hello'); // @type: Promise<string>
+sendMessage('Hello'); // @tsassert: Promise<string>
 
-// @type: Promise<string>
+// @tsassert: Promise<string>
 sendMessage('Hello again');
 
 // Assert type of class instance
-new MyClass(abc); // @type: MyClass<ABC>
+new MyClass(abc); // @tsassert: MyClass<ABC>
 
-// @type: MyClass<ABC>
+// @tsassert: MyClass<ABC>
 new MyClass(abc);
 ```
 
@@ -51,7 +51,7 @@ Example in tests:
 ```ts
 describe('my getter', () => {
   it('should return undefined if any values in the path are nullable', () => {
-    // @type: string | undefined
+    // @tsassert: string | undefined
     const result = get(obj, ['a', 'b', 'c']);
 
     expect(result).toBe(undefined);
