@@ -10,8 +10,8 @@ import { indent, isTruthyString } from './utils';
 import { version } from './version';
 
 const MATCHES_GLOB = /(?:}|\)|\*+\/?|\.[t]sx?)$/;
-const MATCHES_LONELY_COMMENT = /^\s*?\/\/\s?@type(?::|\s)\s*(.+?)\s*?$/;
-const MATCHES_TRAILING_COMMENT = /\/\/\s?@type(?::|\s)\s*(.+?)\s*?$/;
+const MATCHES_LONELY_COMMENT = /^\s*?\/\/\s?@tsassert(?::|\s)\s*(.+?)\s*?$/;
+const MATCHES_TRAILING_COMMENT = /\/\/\s?@tsassert(?::|\s)\s*(.+?)\s*?$/;
 const MATCHES_NODE_MODULES = /^node_modules/;
 
 interface AssertionError {

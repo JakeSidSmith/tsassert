@@ -11,15 +11,15 @@ interface ABC {
   d: ['a', 'b', 'c'];
 }
 
-export const abc = {} as ABC | null; // @type: ABC
+export const abc = {} as ABC | null; // @tsassert: ABC
 
-export const result = removeNull(abc); // @type: ABC | null
+export const result = removeNull(abc); // @tsassert: ABC | null
 
-removeNull(abc); // @type: ABC | null
+removeNull(abc); // @tsassert: ABC | null
 
-export const c = abc?.a?.b.c; // @type string | number
+export const c = abc?.a?.b.c; // @tsassert string | number
 
-export const d = abc?.d; // @type ['a', 'b', 'c'] | undefined
+export const d = abc?.d; // @tsassert ['a', 'b', 'c'] | undefined
 
 class MyClass<T> {
   public input: T;
@@ -30,7 +30,7 @@ class MyClass<T> {
 }
 
 // tslint:disable-next-line:no-unused-expression
-new MyClass(abc); // @type: MyClass<CBA | null>
+new MyClass(abc); // @tsassert: MyClass<CBA | null>
 
-// @type: ABC
-removeNull(abc); // @type: ABC
+// @tsassert: ABC
+removeNull(abc); // @tsassert: ABC
