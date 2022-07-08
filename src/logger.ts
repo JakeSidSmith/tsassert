@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 
 const _log = (input: string, color?: 'cyan' | 'red' | 'green' | 'yellow') => {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.error(color ? chalk[color](input) : input);
 };
 

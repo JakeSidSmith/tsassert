@@ -16,4 +16,4 @@ npm-debug.log*
 tsconfig.dist.json
 tsconfig.excludes.json
 tsconfig.json
-tslint.json
+.eslintrc.json

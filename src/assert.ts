@@ -48,7 +48,7 @@ const assert = (tree: Tree) => {
     }
   }
 
-  globs = globs.map(glob => path.relative(process.cwd(), glob));
+  globs = globs.map((glob) => path.relative(process.cwd(), glob));
 
   const json = ts.readConfigFile(project, ts.sys.readFile);
 
@@ -154,9 +154,8 @@ const assert = (tree: Tree) => {
                 `${fileLine}Found 2 ${COMMENT_PREFIX} comments for the same line`
               );
               return;
-            } else {
-              result = lonelyResult;
             }
+            result = lonelyResult;
           }
         }
 
@@ -227,7 +226,7 @@ const assert = (tree: Tree) => {
   logger.log('');
 
   if (errors.length) {
-    errors.forEach(error => {
+    errors.forEach((error) => {
       if (typeof error === 'string') {
         logger.error(error);
       } else {
@@ -237,7 +236,7 @@ const assert = (tree: Tree) => {
 
         const diffString = diff
           .diffWordsWithSpace(error.expected, error.received)
-          .map(part => {
+          .map((part) => {
             if (part.added) {
               return chalk.bgGreenBright(chalk.black(part.value));
             }
@@ -258,18 +257,17 @@ const assert = (tree: Tree) => {
       `\nSome files failed ${COMMENT_PREFIX} checks.\n`,
       true
     );
+  }
+  if (!filesChecked) {
+    logger.warn(
+      '\nCould not find any matching files to check.\nRun with --verbose to see patterns that were checked.\n'
+    );
+  } else if (!commentsChecked) {
+    logger.warn(
+      `\nCould not find any ${COMMENT_PREFIX} comments in matched files.\nRun with --verbose to see patterns that were checked.\n`
+    );
   } else {
-    if (!filesChecked) {
-      logger.warn(
-        '\nCould not find any matching files to check.\nRun with --verbose to see patterns that were checked.\n'
-      );
-    } else if (!commentsChecked) {
-      logger.warn(
-        `\nCould not find any ${COMMENT_PREFIX} comments in matched files.\nRun with --verbose to see patterns that were checked.\n`
-      );
-    } else {
-      logger.success(`\nAll files passed ${COMMENT_PREFIX} checks.\n`);
-    }
+    logger.success(`\nAll files passed ${COMMENT_PREFIX} checks.\n`);
   }
 };
 

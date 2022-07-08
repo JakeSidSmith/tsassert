@@ -13,7 +13,7 @@
     "dist": "rm -rf dist && tsc --project tsconfig.dist.json && chmod +x dist/cli.js",
     "prettier": "prettier --write '**/*.{ts,tsx,js,jsx,json}'",
     "prettier-check": "prettier --check '**/*.{ts,tsx,js,jsx,json}'",
-    "lint-js": "tslint --project tsconfig.json",
+    "lint-js": "eslint '**/*.{ts,tsx,js,jsx}'",
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "lint": "npm run prettier-check && npm run typecheck && npm run lint-js",
     "tests": "./dist/cli.js assertions/pass.ts --verbose && if ./dist/cli.js assertions/fail.ts --verbose; then echo 'Failing tests passed' && exit 1; else echo 'All tests successfully passed or failed'; fi && ./dist/cli.js --project tsconfig.excludes.json --verbose && echo 'Failing files were successfully excluded'",
@@ -49,10 +49,12 @@
   "devDependencies": {
     "@types/diff": "^4.0.2",
     "@types/globule": "^1.1.3",
-    "prettier": "^1.19.1",
-    "tslint": "^5.20.1",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-eslint-rules": "^5.4.0"
+    "@typescript-eslint/eslint-plugin": "^5.30.5",
+    "@typescript-eslint/parser": "^5.30.5",
+    "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.7.1"
   },
   "peerDependencies": {
     "typescript": "3.x.x"

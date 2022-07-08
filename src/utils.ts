@@ -4,6 +4,6 @@ export const isTruthyString = <T>(input: T | undefined): input is T =>
 export const indent = (input: string, chars: string): string => {
   return input
     .split('\n')
-    .map(line => `${chars}${line}`)
+    .map((line) => `${chars}${line}`)
     .join('\n');
 };

@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as logger from './logger';
 
 const version = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let json: any;
 
   try {
