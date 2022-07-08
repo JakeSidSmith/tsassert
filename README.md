@@ -103,3 +103,41 @@ If you want to include a file that is excluded by your `tsconfig.json` you shoul
 Regardless of your includes or excludes `node_modules` will always be excluded.
 
 Run `tsassert --help` for a full list of options.
+
+## Contributing
+
+### Setup
+
+Ensure you are using a compatible version of NodeJS (16) and NPM (8).
+
+If you're using NVM you can simply:
+
+```shell
+nvm use
+```
+
+And ensure you have NPM 8 installed globally:
+
+```shell
+npm i npm@8 -g
+```
+
+Then run a clean install to get fresh dependencies:
+
+```shell
+npm ci
+```
+
+### Scripts
+
+Run type-checking, linting and tests with:
+
+```shell
+npm test
+```
+
+You can fix formatting issues by running:
+
+```shell
+npm run prettier
+```
