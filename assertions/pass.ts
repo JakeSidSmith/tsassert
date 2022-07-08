@@ -29,7 +29,6 @@ class MyClass<T> {
   }
 }
 
-// tslint:disable-next-line:no-unused-expression
 new MyClass(abc); // @tsassert: MyClass<ABC | null>
 
 // @tsassert: ABC
